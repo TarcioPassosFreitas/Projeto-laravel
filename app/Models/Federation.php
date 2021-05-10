@@ -13,4 +13,8 @@ class Federation extends Model
         return $this->hasMany(Company::class);
     }
 
+  
+
+    
+
 }

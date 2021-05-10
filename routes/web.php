@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\CountryController;
 use App\Http\Controllers\FederationController;
+use App\Models\Federation;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -22,4 +24,8 @@ Route::get('/', function () {
 Route::get('/federations', [FederationController::class, 'index']);
 Route::get('/federation/create', [FederationController::class, 'create']);
 Route::post('/federation/new', [FederationController::class, 'store']);
+Route::post('/federation/find/id', [FederationController::class, 'search']);
+Route::get('/company/create', [CompanyController::class, 'create']);
+Route::post('/company/new', [CompanyController::class, 'store']);
+Route::post('/company/find/id', [CompanyController::class, 'search']);
 

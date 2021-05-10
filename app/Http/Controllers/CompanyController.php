@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Federation;
+use App\Models\Company;
 use Illuminate\Http\Request;
 
-class FederationController extends Controller
+class CompanyController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,15 +14,9 @@ class FederationController extends Controller
      */
     public function index()
     {
-        //$federations = Federation::all(); //consulta
+        $federations = Company::all(); //consulta
 
-        //dd($federations);
-
-        $federation = Federation::where('id', 1)->first(); //filtrando, mostrando resultado específico, retornando o que foi buscado
-        //dd($federation);
-
-        $members = $federation->company()->get();
-        dd($members);
+        dd($federations);
     }
 
     /**
@@ -43,21 +37,16 @@ class FederationController extends Controller
      */
     public function store(Request $request)
     {
-       // dd($request);
+       $company = new Company();
+       $company->name = $request->name;
+       $company->nameFederation = $request->nameFederation;
+       $company->Email = $request->Email;
 
-        $federation = new Federation();
-        $federation->name = $request->name;
-        $federation->companyJr = $request->companyJr;
-        $this->validate($request, ['name' => 'bail|required|unique:federations|min:3|max:20',
-                                    'state' => 'required|unique:federations|min:3|max:20']);
-        $federation->save();
+       $this->validate($request, ['name' => 'bail|required|unique:companies|min:3|max:50',
+                                    'nameFederation' => 'required|min:3|max:50',
+                                    'Email' => 'required|unique:companies|min:3|max:50']);
+        $company->save();
         dd($request);
-        
-       // $errors = $validador->errors();
-
-       // echo $errors->first('email');
-       
-
     }
 
     /**
@@ -107,8 +96,8 @@ class FederationController extends Controller
 
     public function search(request $request){
         
-         dd($request->all());
+        dd($request->all());
+      
        
-        
-    }
+   }
 }
