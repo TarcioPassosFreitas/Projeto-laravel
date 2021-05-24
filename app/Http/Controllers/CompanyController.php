@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Company;
+use App\Models\Federation;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CompanyController extends Controller
 {
@@ -14,9 +16,7 @@ class CompanyController extends Controller
      */
     public function index()
     {
-        $federations = Company::all(); //consulta
 
-        dd($federations);
     }
 
     /**
@@ -26,7 +26,8 @@ class CompanyController extends Controller
      */
     public function create()
     {
-        return view('viewProjeto');
+
+
     }
 
     /**
@@ -37,16 +38,22 @@ class CompanyController extends Controller
      */
     public function store(Request $request)
     {
-       $company = new Company();
-       $company->name = $request->name;
-       $company->nameFederation = $request->nameFederation;
-       $company->Email = $request->Email;
+             //salvar os dados
 
-       $this->validate($request, ['name' => 'bail|required|unique:companies|min:3|max:50',
-                                    'nameFederation' => 'required|min:3|max:50',
-                                    'Email' => 'required|unique:companies|min:3|max:50']);
-        $company->save();
-        dd($request);
+             $request->validate([
+                'name' => 'min:3|max:100|unique:companies,name',
+                'email' => 'unique:companies,email',
+
+            ]);
+
+            Company::create([
+                'federation_id' => $request->federation_id,
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => $request->password,
+            ]);
+
+            return back();
     }
 
     /**
@@ -57,7 +64,9 @@ class CompanyController extends Controller
      */
     public function show($id)
     {
-        //
+        //exibir a lista com os dados
+
+
     }
 
     /**
@@ -94,10 +103,26 @@ class CompanyController extends Controller
         //
     }
 
-    public function search(request $request){
-        
-        dd($request->all());
-      
-       
-   }
+    public function search(Request $request){
+        $companies = Company::all();
+        $federations = Federation::all();
+
+        return view('company.searchCompany', ['companies' => $companies,'federations' => $federations, 'request' => $request]);
+    }
+
+    public function login(Request $request){
+
+
+        $credentials = $request->only('email', 'password');
+
+        if (Auth::attempt($credentials)) {
+            $request->session()->regenerate();
+
+            return redirect()->intended('dashboard');
+        }
+
+        return back()->withErrors([
+            'email' => 'The provided credentials do not match our records.',
+        ]);
+    }
 }

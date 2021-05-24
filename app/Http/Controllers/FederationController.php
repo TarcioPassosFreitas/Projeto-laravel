@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Company;
 use App\Models\Federation;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+
+use function GuzzleHttp\Promise\all;
 
 class FederationController extends Controller
 {
@@ -14,15 +18,16 @@ class FederationController extends Controller
      */
     public function index()
     {
-        //$federations = Federation::all(); //consulta
+        $search = request('search');
 
-        //dd($federations);
 
-        $federation = Federation::where('id', 1)->first(); //filtrando, mostrando resultado específico, retornando o que foi buscado
-        //dd($federation);
 
-        $members = $federation->company()->get();
-        dd($members);
+        $federation = Federation::leftJoin('companies', 'federations.id', '=', 'companies.federation_id')
+        ->select('federations.name as name', 'companies.name as name2')
+        ->where('federations.name', '=', 'sul')
+        ->get();
+        dd($federation);
+
     }
 
     /**
@@ -32,7 +37,9 @@ class FederationController extends Controller
      */
     public function create()
     {
-        return view('viewProjeto');
+
+        $values = Federation::all();
+        return view('federation.main', ['values' => $values]);
     }
 
     /**
@@ -43,20 +50,37 @@ class FederationController extends Controller
      */
     public function store(Request $request)
     {
-       // dd($request);
+        //validando os dados
+        /*$validatedData = $request->validateWithBag('federations', [
+            'name' => 'required|min:3|max:100|unique:federations,name',
+            'state' => 'required|min:3|max:100|unique:federations,state',
+            'email' => 'required|unique:federations,email',
+            'password' => 'required|confirmed|Password::min(8)',
+        ]);
 
-        $federation = new Federation();
-        $federation->name = $request->name;
-        $federation->companyJr = $request->companyJr;
-        $this->validate($request, ['name' => 'bail|required|unique:federations|min:3|max:20',
-                                    'state' => 'required|unique:federations|min:3|max:20']);
-        $federation->save();
-        dd($request);
-        
-       // $errors = $validador->errors();
 
-       // echo $errors->first('email');
-       
+        //salvar os dados
+        Federation::create([
+            'name' => $request->namefederation,
+            'state' => $request->state,
+            'email' => $request->emailfederation,
+            'password' => $request->passwordfederation,
+        ]);*/
+        $request->validate([
+            'name' => 'min:3|max:100|unique:federations,name',
+            'state' => 'min:3|max:100|unique:federations,state',
+            'email' => 'unique:federations,email',
+            'password' => 'confirmed|Password::min(8)',
+        ]);
+
+        Federation::create([
+            'name' => $request->namefederation,
+            'state' => $request->state,
+            'email' => $request->emailfederation,
+            'password' => $request->passwordfederation,
+        ]);
+
+        return "salvo";
 
     }
 
@@ -68,7 +92,20 @@ class FederationController extends Controller
      */
     public function show($id)
     {
-        //
+        //exibir a lista com os dados
+        $federation = Federation::leftJoin('companies', 'federations.id', '=', 'companies.federation_id')
+        ->select('federations.name as name', 'companies.name as name2')
+        ->where('federations.name', '=', 'sul')
+        ->get();
+        dd($federation);
+
+
+
+
+
+
+
+
     }
 
     /**
@@ -105,10 +142,23 @@ class FederationController extends Controller
         //
     }
 
-    public function search(request $request){
-        
-         dd($request->all());
-       
-        
+    public function welcome(){
+        return view('federation.main');
+    }
+
+    public function search(Request $request){
+        $federation = Federation::all();
+        $name = $this->$federation->search($request->search);
+        return $name;
+    }
+
+    public function generalSearch(){
+        $federations = Federation::all();
+        $companies = Company::all();
+        return view('federation.searchGeneral', ['federations' => $federations, 'companies' => $companies]);
+    }
+
+    public function ecompJr(){
+        return view('federation.ecompJr');
     }
 }

@@ -17,15 +17,33 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+//Route::namespace(value('site'))->group(function (){
+ //   Route::get( '/', 'App\Http\Controllers\FederationController@welcome');
+//});
 
-Route::get('/federations', [FederationController::class, 'index']);
-Route::get('/federation/create', [FederationController::class, 'create']);
-Route::post('/federation/new', [FederationController::class, 'store']);
-Route::post('/federation/find/id', [FederationController::class, 'search']);
-Route::get('/company/create', [CompanyController::class, 'create']);
-Route::post('/company/new', [CompanyController::class, 'store']);
-Route::post('/company/find/id', [CompanyController::class, 'search']);
+Route::get('/', 'App\Http\Controllers\FederationController@create');
+Route::post('/', 'App\Http\Controllers\FederationController@store')->name('save_federation');
+
+Route::get('/#paracadastro2', 'App\Http\Controllers\CompanyController@create');
+Route::post('/search/General', 'App\Http\Controllers\FederationController@generalSearch')->name('search_general');
+
+Route::post('/register/company', 'App\Http\Controllers\CompanyController@store')->name('save_company');
+Route::post('/ecompJr', 'App\Http\Controllers\FederationController@ecompJr')->name('search_ecompJr');
+
+Route::post('/login', 'App\Http\Controllers\CompanyController@login')->name('login_user');
+
+
+
+
+Route::any('/company/search', 'App\Http\Controllers\CompanyController@search')->name('company_search');
+
+Route::get('/register/federation', 'App\Http\Controllers\FederationController@create');
+
+
+
+
+Route::get('/view/federation/{id}', 'App\Http\Controllers\FederationController@show');
+Route::get('/view/company/{id}', 'App\Http\Controllers\CompanyController@show');
+
+Route::get('/index', 'App\Http\Controllers\FederationController@index');
 

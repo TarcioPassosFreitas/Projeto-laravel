@@ -9,12 +9,17 @@ class Federation extends Model
 {
     use HasFactory;
 
-    public function company(){
+    protected $fillable = ['name', 'state', 'email', 'password'];
+
+    public function companies(){
         return $this->hasMany(Company::class);
     }
 
-  
-
-    
-
+    public function search($search = null){
+        $result = $this->where(function($query) use($search){
+            if($search){
+                $query->where('ej', 'LIKE', "%{$search}%");
+            }
+        })->toSql();
+    }
 }

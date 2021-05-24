@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateFederationsTable extends Migration
+class CreateCompaniesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,16 @@ class CreateFederationsTable extends Migration
      */
     public function up()
     {
-        Schema::create('federations', function (Blueprint $table) {
+        Schema::create('companies', function (Blueprint $table) {
+
+
+
             $table->id();
+            $table->unsignedBigInteger('federation_id');
+            $table->foreignId('federation_id')->references('id')->on('federations');
             $table->string('name');
-            $table->string('state');
+            $table->string('email');
+            $table->string('password');
             $table->timestamps();
         });
     }
@@ -28,6 +34,6 @@ class CreateFederationsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('federations');
+        Schema::dropIfExists('companies');
     }
 }
